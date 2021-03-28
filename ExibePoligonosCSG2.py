@@ -279,7 +279,10 @@ def populaArestasPoligono(P):
                 indexP1P = 0
             else:
                 indexP1P = p1 + 1
-            P.Arestas.append( (P.Vertices[indexP1],P.Vertices[indexP1P]) )
+            if arestaIsInside():
+                P.Arestas['in'].append( (P.Vertices[indexP1],P.Vertices[indexP1P]) )
+            else:
+                P.Arestas['out'].append( (P.Vertices[indexP1],P.Vertices[indexP1P]) )
 
 #Funcionando como deveria
 def getPontoMedioAresta(aresta):
@@ -293,6 +296,8 @@ def getVerticeIntersec(r1, r2, t):
     y = r1.y*(1 - t) + r2.y * t
     return Point(x, y, 0)
 
+def arestaIsInside():
+    return False
 
 def init():
     global Min, Max, Meio, Terco, Largura  # Variáveis usadas para definir os limites da Window
@@ -321,24 +326,16 @@ def init():
     Meio.z = (Max.z+Min.z)/2
 
     # PEGANDO OS PONTOS DE INTERSECÇÃO
-    points = []
+    pointsIntersec = []
     if(hasPolygonIntersection(B,A)):
-        points += getPolygonIntersection(B,A)
+        pointsIntersec += getPolygonIntersection(B,A)
         
-    #IMPRIMINDO OS PONTOS DE INTERSECÇÃO
-    # for p in points:
-    #     p.imprime()
-
-    # for p in B.Vertices:
-    #     p.imprime()
 
     populaArestasPoligono(B)
-    for a,b in B.Arestas:
+    for a,b in B.Arestas['out']:
         a.imprime()
         b.imprime()
         print('------')
-
-    
 
     
     

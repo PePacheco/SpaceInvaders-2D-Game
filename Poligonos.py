@@ -15,7 +15,7 @@ class Polygon:
 
     def __init__(self):
         self.Vertices = []
-        self.Arestas = []
+        self.Arestas = { 'out': [], 'in': [] }
 
     def getNVertices(self):
         return len(self.Vertices)
