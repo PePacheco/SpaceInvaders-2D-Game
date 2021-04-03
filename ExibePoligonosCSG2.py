@@ -261,28 +261,35 @@ def getPolygonIntersection(S1, S2):
                 indexP2P = p2 + 1
 
             if hasRetaIntersection(S1.Vertices[indexP1], S1.Vertices[indexP1P], S2.Vertices[indexP2], S2.Vertices[indexP2P]):
+                # Pegando os pontos de intersecção
                 temp = getRetaIntersection(S1.Vertices[indexP1], S1.Vertices[indexP1P], S2.Vertices[indexP2], S2.Vertices[indexP2P])
-                point = getVerticeIntersec(S1.Vertices[indexP1], S1.Vertices[indexP1P], temp[1])
-                #inserindo pontos de intersecção como vertices no poligono S1 -- Precisa de fix
-                S1.insereVerticePosition(point.x,point.y,0,indexP1+1)
+                point1 = getVerticeIntersec(S1.Vertices[indexP1], S1.Vertices[indexP1P], temp[1])
+                point2 = getVerticeIntersec(S2.Vertices[indexP2], S2.Vertices[indexP2P], temp[0])
+
+                # Inserindo em ambos poligonos
+                S1.insereVerticePosition(point1.x,point1.y,0,indexP1+1)
+                S2.insereVerticePosition(point2.x,point2.y,0,indexP2+1)
+
+                # Aumentando os tamanhos e os indices de acesso
+                indexP1 += 1
+                indexP2 += 1
+                size2 += 1
                 size1 += 1
-                #-------
-                points.append(point)  
-    return points
+
 
 #Popula um vetor de tuplas chamado arestas no poligono   
-def populaArestasPoligono(P):
-        for p1 in range(len(P.Vertices)):
+def populaArestasPoligono(P1, P2):
+        for p1 in range(len(P1.Vertices)):
             indexP1 = p1
             indexP1P = 0
-            if p1 == len(P.Vertices)-1:
+            if p1 == len(P1.Vertices)-1:
                 indexP1P = 0
             else:
                 indexP1P = p1 + 1
-            if arestaIsInside():
-                P.Arestas['in'].append( (P.Vertices[indexP1],P.Vertices[indexP1P]) )
+            if arestaIsInside(P1.Vertices[indexP1], P1.Vertices[indexP1P], P2):
+                P1.Arestas['in'].append( (P1.Vertices[indexP1],P1.Vertices[indexP1P]) )
             else:
-                P.Arestas['out'].append( (P.Vertices[indexP1],P.Vertices[indexP1P]) )
+                P1.Arestas['out'].append( (P1.Vertices[indexP1],P1.Vertices[indexP1P]) )
 
 #Funcionando como deveria
 def getPontoMedioAresta(aresta):
@@ -296,7 +303,11 @@ def getVerticeIntersec(r1, r2, t):
     y = r1.y*(1 - t) + r2.y * t
     return Point(x, y, 0)
 
-def arestaIsInside():
+def arestaIsInside(p1, p2, P2):
+    pontoMedioX, pontoMedioY = getPontoMedioAresta((p1, p2))
+    for point in P2.Vertices:
+        continue
+        point.imprime()
     return False
 
 def init():
@@ -327,12 +338,16 @@ def init():
 
     # PEGANDO OS PONTOS DE INTERSECÇÃO
     pointsIntersec = []
-    if(hasPolygonIntersection(B,A)):
-        pointsIntersec += getPolygonIntersection(B,A)
-        
+    if(hasPolygonIntersection(A,B)):
+        getPolygonIntersection(A,B)
 
-    populaArestasPoligono(B)
+    # Criando as arestas dos poligonos
+    # populaArestasPoligono(B)
+    populaArestasPoligono(A, B)
+    populaArestasPoligono(B, A)
+
     for a,b in B.Arestas['out']:
+        continue
         a.imprime()
         b.imprime()
         print('------')
