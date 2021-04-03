@@ -22,6 +22,8 @@ Mapa = Polygon()
 
 A = Polygon()
 B = Polygon()
+newA = Polygon()
+newB = Polygon()
 Uniao = Polygon()
 Intersecao = Polygon()
 Diferenca = Polygon()
@@ -91,23 +93,23 @@ def display():
     B.desenhaPoligono()
     glPopMatrix()
 
-    # #Desenha o polígono A no meio, acima
-    # glPushMatrix()
-    # glTranslatef(Terco.x, Meio.y, 0)
-    # glScalef(0.33, 0.5, 1)
-    # glLineWidth(2)
-    # glColor3f(1,1,0) # R, G, B  [0..1]
-    # A.desenhaPoligono()
-    # glPopMatrix()
+    #Desenha o polígono A no meio, acima
+    glPushMatrix()
+    glTranslatef(Terco.x, Meio.y, 0)
+    glScalef(0.33, 0.5, 1)
+    glLineWidth(2)
+    glColor3f(1,1,0) # R, G, B  [0..1]
+    newA.desenhaPoligono()
+    glPopMatrix()
 
-    # # Desenha o polígono B no canto superior direito
-    # glPushMatrix()
-    # glTranslatef(Terco.x*2, Meio.y, 0)
-    # glScalef(0.33, 0.5, 1)
-    # glLineWidth(2)
-    # glColor3f(1,0,0); # R, G, B  [0..1]
-    # B.desenhaPoligono()
-    # glPopMatrix()
+    # Desenha o polígono B no canto superior direito
+    glPushMatrix()
+    glTranslatef(Terco.x*2, Meio.y, 0)
+    glScalef(0.33, 0.5, 1)
+    glLineWidth(2)
+    glColor3f(1,0,0); # R, G, B  [0..1]
+    newB.desenhaPoligono()
+    glPopMatrix()
     
     # # Desenha o polígono A no canto inferior esquerdo
     # glPushMatrix()
@@ -235,12 +237,13 @@ def getRetaIntersection(k, l, m, n):
 
     return s, t
 
-def getPolygonIntersection(S1, S2):
+def CreateNewPolygonWithIntersections(S1, S2):
     size1 = len(S1.Vertices)
     size2 = len(S2.Vertices)
     points = []
-    indexForNewVerticeS1 = {}
-    indexForNewVerticeS2 = {}
+    
+    newPolygon = Polygon()
+
     
     for p1 in range(size1):
         indexP1 = p1
@@ -250,6 +253,7 @@ def getPolygonIntersection(S1, S2):
             indexP1P = 0
         else:
             indexP1P = p1 + 1
+        newPolygon.insereVertice(S1.Vertices[indexP1].x,S1.Vertices[indexP1].y,0)
 
         for p2 in range(size2):
             indexP2 = p2
@@ -258,38 +262,45 @@ def getPolygonIntersection(S1, S2):
             if p2 == size2 -1:
                 indexP2P = 0
             else:
-                indexP2P = p2 + 1
+                indexP2P = p2 + 1        
 
-            if hasRetaIntersection(S1.Vertices[indexP1], S1.Vertices[indexP1P], S2.Vertices[indexP2], S2.Vertices[indexP2P]):
-                # Pegando os pontos de intersecção
-                temp = getRetaIntersection(S1.Vertices[indexP1], S1.Vertices[indexP1P], S2.Vertices[indexP2], S2.Vertices[indexP2P])
-                point1 = getVerticeIntersec(S1.Vertices[indexP1], S1.Vertices[indexP1P], temp[1])
-                point2 = getVerticeIntersec(S2.Vertices[indexP2], S2.Vertices[indexP2P], temp[0])
-
-                # Inserindo em ambos poligonos
-                S1.insereVerticePosition(point1.x,point1.y,0,indexP1+1)
-                S2.insereVerticePosition(point2.x,point2.y,0,indexP2+1)
-
-                # Aumentando os tamanhos e os indices de acesso
-                indexP1 += 1
-                indexP2 += 1
-                size2 += 1
-                size1 += 1
+            if hasRetaIntersection(S1.Vertices[indexP1], S1.Vertices[indexP1P], S2.Vertices[indexP2], S2.Vertices[indexP2P]): 
+                point1 = getIntersection(S1.Vertices[indexP1], S1.Vertices[indexP1P], S2.Vertices[indexP2], S2.Vertices[indexP2P])
+                newPolygon.insereVertice(point1.x,point1.y,0)
+                continue
+            
+    return newPolygon
 
 
 #Popula um vetor de tuplas chamado arestas no poligono   
-def populaArestasPoligono(P1, P2):
-        for p1 in range(len(P1.Vertices)):
-            indexP1 = p1
+def populaArestasPoligono(P1):
+    for p1 in range(len(P1.Vertices)):
+        indexP1 = p1
+        indexP1P = 0
+        if p1 == len(P1.Vertices)-1:
             indexP1P = 0
-            if p1 == len(P1.Vertices)-1:
-                indexP1P = 0
-            else:
-                indexP1P = p1 + 1
-            if arestaIsInside(P1.Vertices[indexP1], P1.Vertices[indexP1P], P2):
-                P1.Arestas['in'].append( (P1.Vertices[indexP1],P1.Vertices[indexP1P]) )
-            else:
-                P1.Arestas['out'].append( (P1.Vertices[indexP1],P1.Vertices[indexP1P]) )
+        else:
+            indexP1P = p1 + 1
+        
+        P1.Arestas.append((P1.Vertices[indexP1],P1.Vertices[indexP1P]))
+           
+
+def getIntersection(k, l, m, n):
+        det = (n.x - m.x) * (l.y - k.y)  -  (n.y - m.y) * (l.x - k.x)
+
+        if (det == 0.0):
+            return False # Não há intersecção
+
+        s = ((n.x - m.x) * (m.y - k.y) - (n.y - m.y) * (m.x - k.x))/ det 
+        t = ((l.x - k.x) * (m.y - k.y) - (l.y - k.y) * (m.x - k.x))/ det 
+
+        if (s >= 0.0 and s <= 1.0 and t >= 0.0 and t <= 1.0):
+            x = k.x + s * ( l.x -k.x)
+            y = k.y + s * ( l.y -k.y)
+            return Point(x,y,0)
+        else:
+            return False
+
 
 #Funcionando como deveria
 def getPontoMedioAresta(aresta):
@@ -336,21 +347,29 @@ def init():
     Meio.y = (Max.y+Min.y)/2
     Meio.z = (Max.z+Min.z)/2
 
-    # PEGANDO OS PONTOS DE INTERSECÇÃO
-    pointsIntersec = []
+    #-------------------------------------NOSSOS TESTESSSSSSSSSSSSSSSSSSSSSSSS---------------------------------------------------#
+    
     if(hasPolygonIntersection(A,B)):
-        getPolygonIntersection(A,B)
+        newA.Vertices = CreateNewPolygonWithIntersections(B,A).Vertices
+        newB.Vertices = CreateNewPolygonWithIntersections(A,B).Vertices
 
-    # Criando as arestas dos poligonos
-    # populaArestasPoligono(B)
-    populaArestasPoligono(A, B)
-    populaArestasPoligono(B, A)
+        populaArestasPoligono(newA)
+        populaArestasPoligono(newB)
 
-    for a,b in B.Arestas['out']:
-        continue
-        a.imprime()
-        b.imprime()
-        print('------')
+        for a,b in newB.Arestas:
+            a.imprime()
+            b.imprime()
+            print('------')
+
+        print('outroPoligono')
+
+
+        for a,b in newA.Arestas:
+            a.imprime()
+            b.imprime()
+            print('------')   
+    
+    
 
     
     

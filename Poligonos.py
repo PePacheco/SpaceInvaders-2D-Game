@@ -15,7 +15,7 @@ class Polygon:
 
     def __init__(self):
         self.Vertices = []
-        self.Arestas = { 'out': [], 'in': [] }
+        self.Arestas = []
 
     def getNVertices(self):
         return len(self.Vertices)
@@ -34,7 +34,7 @@ class Polygon:
         self.Vertices.insert(position,Point(x,y,z))
 
     def desenhaPoligono(self):
-        #print ("Desenha Poligono - Tamanho:", len(self.Vertices))
+        print ("Desenha Poligono - Tamanho:", len(self.Vertices))
         glBegin(GL_LINE_LOOP);
         for V in self.Vertices:
             glVertex3f(V.x,V.y,V.z);
