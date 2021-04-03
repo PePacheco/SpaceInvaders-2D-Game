@@ -301,6 +301,12 @@ def getIntersection(k, l, m, n):
         else:
             return False
 
+def getInAndOut(A,B):
+    for aresta in A.Arestas:
+        pontoMedio = getPontoMedioAresta(aresta)
+        #pontoMedio[0] = x , pontoMedio[1] = y
+
+
 
 #Funcionando como deveria
 def getPontoMedioAresta(aresta):
@@ -368,6 +374,9 @@ def init():
             a.imprime()
             b.imprime()
             print('------')   
+
+    getInAndOut(newA,B)
+
     
     
 
