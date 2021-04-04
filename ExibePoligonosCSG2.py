@@ -244,7 +244,6 @@ def CreateNewPolygonWithIntersections(S1, S2):
     
     newPolygon = Polygon()
 
-    
     for p1 in range(size1):
         indexP1 = p1
         indexP1P = 0
