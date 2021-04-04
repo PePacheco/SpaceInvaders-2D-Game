@@ -324,13 +324,6 @@ def makeIntersecao(aWithEdges, bWithEdges):
     countA = 0
     countB = 0
 
-    for a in aWithEdges.Arestas:
-        countA += 1
-        if a.out:
-            continue
-        else:
-            break
-
     for b in bWithEdges.Arestas:
         countB += 1
         if not b.out:
