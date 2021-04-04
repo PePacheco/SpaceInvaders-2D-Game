@@ -99,17 +99,17 @@ def display():
     glScalef(0.33, 0.5, 1)
     glLineWidth(2)
     glColor3f(1,1,0) # R, G, B  [0..1]
-    newA.desenhaPoligono()
+    Intersecao.desenhaPoligono()
     glPopMatrix()
 
     # Desenha o polígono B no canto superior direito
-    glPushMatrix()
-    glTranslatef(Terco.x*2, Meio.y, 0)
-    glScalef(0.33, 0.5, 1)
-    glLineWidth(2)
-    glColor3f(1,0,0); # R, G, B  [0..1]
-    newB.desenhaPoligono()
-    glPopMatrix()
+    # glPushMatrix()
+    # glTranslatef(Terco.x*2, Meio.y, 0)
+    # glScalef(0.33, 0.5, 1)
+    # glLineWidth(2)
+    # glColor3f(1,0,0); # R, G, B  [0..1]
+    # newB.desenhaPoligono()
+    # glPopMatrix()
     
     # # Desenha o polígono A no canto inferior esquerdo
     # glPushMatrix()
@@ -300,19 +300,38 @@ def getIntersection(k, l, m, n):
         else:
             return False
 
-def getInAndOut(A,B):
-    for aresta in A.Arestas:
-        pontoMedio = getPontoMedioAresta(aresta)
+def getInAndOut(A,B,InsAndOuts):
+    for arestaA in A.Arestas:
+        count = 0
+        pontoMedio = getPontoMedioAresta(arestaA)
         #pontoMedio[0] = x , pontoMedio[1] = y
+        newAresta = (Point(0,pontoMedio.y,0),pontoMedio)
+        for arestaB in B.Arestas:
+            if(hasRetaIntersection(newAresta[0], newAresta[1], arestaB[0], arestaB[1])):
+                count += 1
+        if(count%2 != 0):
+            InsAndOuts['in'].append(arestaA)
+        else:
+            InsAndOuts['out'].append(arestaA)
+    return InsAndOuts
 
+
+def MakeIntersecao(insAndOutsForA, insAndOutsForB):
+    #TA ERRADO
+    Vertices = []
+    for a,b in insAndOutsForB['in']:
+        Vertices.append(a)
+    for a,b in insAndOutsForA['in']:
+        Vertices.append(a)    
+    return Vertices
 
 
 #Funcionando como deveria
 def getPontoMedioAresta(aresta):
     pontoMediox = (aresta[0].x + aresta[1].x)/2 
     pontoMedioy = (aresta[0].y + aresta[1].y)/2 
-    return pontoMediox, pontoMedioy
-
+    pontoMedio = Point(pontoMediox,pontoMedioy,0)
+    return pontoMedio
 
 def getVerticeIntersec(r1, r2, t):
     x = r1.x*(1 - t) + r2.x * t
@@ -355,26 +374,31 @@ def init():
     #-------------------------------------NOSSOS TESTESSSSSSSSSSSSSSSSSSSSSSSS---------------------------------------------------#
     
     if(hasPolygonIntersection(A,B)):
-        newA.Vertices = CreateNewPolygonWithIntersections(B,A).Vertices
-        newB.Vertices = CreateNewPolygonWithIntersections(A,B).Vertices
+        populaArestasPoligono(A)
+        populaArestasPoligono(B)
+
+        newA.Vertices = CreateNewPolygonWithIntersections(A,B).Vertices
+        newB.Vertices = CreateNewPolygonWithIntersections(B,A).Vertices
 
         populaArestasPoligono(newA)
         populaArestasPoligono(newB)
 
-        for a,b in newB.Arestas:
-            a.imprime()
-            b.imprime()
-            print('------')
 
-        print('outroPoligono')
+    InsAndOutsForA = { 'out': [], 'in': [] }
+    InsAndOutsForB = { 'out': [], 'in': [] }
+    
+    getInAndOut(newA,B,InsAndOutsForA)
+    getInAndOut(newB,A,InsAndOutsForB)
+
+    for a,b in InsAndOutsForA['in']:
+        a.imprime()
+        b.imprime()
+        print('---------')
+    
+    Intersecao.Vertices += MakeIntersecao(InsAndOutsForA,InsAndOutsForB)
 
 
-        for a,b in newA.Arestas:
-            a.imprime()
-            b.imprime()
-            print('------')   
 
-    getInAndOut(newA,B)
 
     
     
