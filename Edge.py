@@ -14,9 +14,11 @@ class Edge:
         #print ("Objeto criado")
     
     def imprime(self):
+        print("-------")
         self.ini.imprime()
         self.fim.imprime()
-        print (self.out)
+        print ("Fora" ,self.out)
+        print("--------")
     
     def set(self, x, y, z):
         self.ini = x

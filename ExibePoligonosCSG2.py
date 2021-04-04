@@ -323,10 +323,6 @@ def makeIntersecao(aWithEdges, bWithEdges):
     Vertices = []
     countA = 0
     countB = 0
-    for b in bWithEdges.Arestas:
-        continue
-        b.ini.imprime()
-        b.fim.imprime()
 
     for a in aWithEdges.Arestas:
         countA += 1
@@ -456,8 +452,7 @@ def init():
     getInAndOut(newA,B, aWithEdges)
     getInAndOut(newB,A, bWithEdges)
 
-    for x in bWithEdges.Arestas:
-        continue
+    for x in aWithEdges.Arestas:
         x.imprime()
     
     Intersecao.Vertices += makeIntersecao(bWithEdges,aWithEdges)
