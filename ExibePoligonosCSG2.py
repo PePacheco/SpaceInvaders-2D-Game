@@ -256,7 +256,7 @@ def CreateNewPolygonWithIntersections(S1, S2):
             indexP1P = 0
         else:
             indexP1P = p1 + 1
-            newPolygon.insereVertice(S1.Vertices[indexP1].x,S1.Vertices[indexP1].y,0)
+        newPolygon.insereVertice(S1.Vertices[indexP1].x,S1.Vertices[indexP1].y,0)
 
         for p2 in range(size2):
             indexP2 = p2
@@ -270,7 +270,6 @@ def CreateNewPolygonWithIntersections(S1, S2):
             if hasRetaIntersection(S1.Vertices[indexP1], S1.Vertices[indexP1P], S2.Vertices[indexP2], S2.Vertices[indexP2P]): 
                 point1 = getIntersection(S1.Vertices[indexP1], S1.Vertices[indexP1P], S2.Vertices[indexP2], S2.Vertices[indexP2P])
                 newPolygon.insereVertice(point1.x,point1.y,0)
-                continue
             
     return newPolygon
 
@@ -284,6 +283,7 @@ def populaArestasPoligono(P1):
             indexP1P = 0
         else:
             indexP1P = p1 + 1
+
         P1.Arestas.append((P1.Vertices[indexP1],P1.Vertices[indexP1P]))
            
 
@@ -340,11 +340,7 @@ def makeIntersecao(aWithEdges, bWithEdges):
                 Vertices.append(b.fim)
             else:
                 Vertices.append(b.ini)
-        
 
-    print("---------------")
-    for v in Vertices:
-        v.imprime()
     return Vertices
 
 
@@ -397,13 +393,6 @@ def getVerticeIntersec(r1, r2, t):
     y = r1.y*(1 - t) + r2.y * t
     return Point(x, y, 0)
 
-def arestaIsInside(p1, p2, P2):
-    pontoMedioX, pontoMedioY = getPontoMedioAresta((p1, p2))
-    for point in P2.Vertices:
-        continue
-        point.imprime()
-    return False
-
 def init():
     global Min, Max, Meio, Terco, Largura  # Variáveis usadas para definir os limites da Window
     
@@ -442,21 +431,11 @@ def init():
         populaArestasPoligono(newA)
         populaArestasPoligono(newB)
     
-    getInAndOut(newA,B, aWithEdges)
-    getInAndOut(newB,A, bWithEdges)
-
-    for x in aWithEdges.Arestas:
-        x.imprime()
-    
-    Intersecao.Vertices += makeIntersecao(bWithEdges,aWithEdges)
-    Uniao.Vertices += makeUniao(bWithEdges,aWithEdges)
-
-
-
-
-    
-    
-
+        getInAndOut(newA,B, aWithEdges)
+        getInAndOut(newB,A, bWithEdges)
+        
+        Intersecao.Vertices += makeIntersecao(bWithEdges,aWithEdges)
+        Uniao.Vertices += makeUniao(bWithEdges,aWithEdges)
     
     
 
