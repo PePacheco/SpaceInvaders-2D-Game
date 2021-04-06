@@ -16,6 +16,7 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from Poligonos import *
+from Edge import *
 
 # ***********************************************************************************
 Mapa = Polygon()
@@ -24,8 +25,11 @@ A = Polygon()
 B = Polygon()
 newA = Polygon()
 newB = Polygon()
+aWithEdges = Polygon()
+bWithEdges = Polygon()
 Uniao = Polygon()
 Intersecao = Polygon()
+Uniao = Polygon()
 Diferenca = Polygon()
 
 # Limites lógicos da área de desenho
@@ -103,13 +107,13 @@ def display():
     glPopMatrix()
 
     # Desenha o polígono B no canto superior direito
-    # glPushMatrix()
-    # glTranslatef(Terco.x*2, Meio.y, 0)
-    # glScalef(0.33, 0.5, 1)
-    # glLineWidth(2)
-    # glColor3f(1,0,0); # R, G, B  [0..1]
-    # newB.desenhaPoligono()
-    # glPopMatrix()
+    glPushMatrix()
+    glTranslatef(Terco.x*2, Meio.y, 0)
+    glScalef(0.33, 0.5, 1)
+    glLineWidth(2)
+    glColor3f(1,0,0); # R, G, B  [0..1]
+    Uniao.desenhaPoligono()
+    glPopMatrix()
     
     # # Desenha o polígono A no canto inferior esquerdo
     # glPushMatrix()
@@ -266,7 +270,6 @@ def CreateNewPolygonWithIntersections(S1, S2):
             if hasRetaIntersection(S1.Vertices[indexP1], S1.Vertices[indexP1P], S2.Vertices[indexP2], S2.Vertices[indexP2P]): 
                 point1 = getIntersection(S1.Vertices[indexP1], S1.Vertices[indexP1P], S2.Vertices[indexP2], S2.Vertices[indexP2P])
                 newPolygon.insereVertice(point1.x,point1.y,0)
-                continue
             
     return newPolygon
 
@@ -280,7 +283,7 @@ def populaArestasPoligono(P1):
             indexP1P = 0
         else:
             indexP1P = p1 + 1
-        
+
         P1.Arestas.append((P1.Vertices[indexP1],P1.Vertices[indexP1P]))
            
 
@@ -300,7 +303,7 @@ def getIntersection(k, l, m, n):
         else:
             return False
 
-def getInAndOut(A,B,InsAndOuts):
+def getInAndOut(A,B, newPolWithEdges):
     for arestaA in A.Arestas:
         count = 0
         pontoMedio = getPontoMedioAresta(arestaA)
@@ -310,19 +313,71 @@ def getInAndOut(A,B,InsAndOuts):
             if(hasRetaIntersection(newAresta[0], newAresta[1], arestaB[0], arestaB[1])):
                 count += 1
         if(count%2 != 0):
-            InsAndOuts['in'].append(arestaA)
+            newPolWithEdges.Arestas.append(Edge(arestaA[0], arestaA[1], False))
         else:
-            InsAndOuts['out'].append(arestaA)
-    return InsAndOuts
+            newPolWithEdges.Arestas.append(Edge(arestaA[0], arestaA[1], True))
+    return
 
 
-def MakeIntersecao(insAndOutsForA, insAndOutsForB):
-    #TA ERRADO
+def makeIntersecao(aWithEdges, bWithEdges):
     Vertices = []
-    for a,b in insAndOutsForB['in']:
-        Vertices.append(a)
-    for a,b in insAndOutsForA['in']:
-        Vertices.append(a)    
+    countA = 0
+    countB = 0
+
+    for b in bWithEdges.Arestas:
+        countB += 1
+        if not b.out:
+            Vertices.append(b.ini)
+        else:
+            Vertices.append(b.ini)
+            break
+
+    for b in bWithEdges.Arestas[countB::]:
+        countB += 1
+        if not b.out:
+            if countB == len(bWithEdges.Arestas):
+                Vertices.append(b.ini)
+                Vertices.append(b.fim)
+            else:
+                Vertices.append(b.ini)
+
+    return Vertices
+
+
+def makeUniao(aWithEdges: Polygon, bWithEdges: Polygon):
+    Vertices = []
+    countA = 0
+    countB = 0
+    for a in aWithEdges.Arestas:
+        countA += 1
+        if not a.out:
+            break
+        else:
+            Vertices.append(a.ini)
+
+    for b in bWithEdges.Arestas:
+        countB += 1
+        if b.out:
+            Vertices.append(b.ini)
+            break
+            
+    for b in bWithEdges.Arestas[countB::]:
+        countB += 1
+        if not b.out:
+            break
+        else:
+            Vertices.append(b.ini)
+        
+    for a in aWithEdges.Arestas[countA::]:
+        countA += 1
+        if not a.out:
+            continue
+        if countA == len(aWithEdges.Arestas):
+            Vertices.append(a.ini)
+            Vertices.append(a.fim)
+        else:
+            Vertices.append(a.ini)
+
     return Vertices
 
 
@@ -337,13 +392,6 @@ def getVerticeIntersec(r1, r2, t):
     x = r1.x*(1 - t) + r2.x * t
     y = r1.y*(1 - t) + r2.y * t
     return Point(x, y, 0)
-
-def arestaIsInside(p1, p2, P2):
-    pontoMedioX, pontoMedioY = getPontoMedioAresta((p1, p2))
-    for point in P2.Vertices:
-        continue
-        point.imprime()
-    return False
 
 def init():
     global Min, Max, Meio, Terco, Largura  # Variáveis usadas para definir os limites da Window
@@ -382,27 +430,12 @@ def init():
 
         populaArestasPoligono(newA)
         populaArestasPoligono(newB)
-
-
-    InsAndOutsForA = { 'out': [], 'in': [] }
-    InsAndOutsForB = { 'out': [], 'in': [] }
     
-    getInAndOut(newA,B,InsAndOutsForA)
-    getInAndOut(newB,A,InsAndOutsForB)
-
-    for a,b in InsAndOutsForA['in']:
-        a.imprime()
-        b.imprime()
-        print('---------')
-    
-    Intersecao.Vertices += MakeIntersecao(InsAndOutsForA,InsAndOutsForB)
-
-
-
-
-    
-    
-
+        getInAndOut(newA,B, aWithEdges)
+        getInAndOut(newB,A, bWithEdges)
+        
+        Intersecao.Vertices += makeIntersecao(bWithEdges,aWithEdges)
+        Uniao.Vertices += makeUniao(bWithEdges,aWithEdges)
     
     
 
