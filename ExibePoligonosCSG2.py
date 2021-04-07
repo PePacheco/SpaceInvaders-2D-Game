@@ -348,35 +348,28 @@ def makeUniao(aWithEdges: Polygon, bWithEdges: Polygon):
     Vertices = []
     countA = 0
     countB = 0
-    for a in aWithEdges.Arestas:
-        countA += 1
-        if not a.out:
-            break
-        else:
-            Vertices.append(a.ini)
-
-    for b in bWithEdges.Arestas:
-        countB += 1
-        if b.out:
-            Vertices.append(b.ini)
-            break
-            
-    for b in bWithEdges.Arestas[countB::]:
-        countB += 1
-        if not b.out:
-            break
-        else:
-            Vertices.append(b.ini)
-        
-    for a in aWithEdges.Arestas[countA::]:
-        countA += 1
-        if not a.out:
-            continue
-        if countA == len(aWithEdges.Arestas):
-            Vertices.append(a.ini)
-            Vertices.append(a.fim)
-        else:
-            Vertices.append(a.ini)
+    helper = 1
+    while countA < len(aWithEdges.Arestas) or countB < len(bWithEdges.Arestas):
+        if helper == 1:
+            if countA < len(aWithEdges.Arestas):
+                for a in aWithEdges.Arestas[countA::]:
+                    countA += 1
+                    if a.out:
+                        Vertices.append(a.ini)
+                        helper = 2
+                    else:
+                        break
+        elif helper == 2:
+            if countB < len(bWithEdges.Arestas):
+                for b in bWithEdges.Arestas[countB::]:
+                    b.ini.imprime()
+                    print(b.out)
+                    countB += 1
+                    if b.out:
+                        Vertices.append(b.ini)
+                        helper = 1
+                    else:
+                        break
 
     return Vertices
 
