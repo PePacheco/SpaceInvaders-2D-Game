@@ -323,23 +323,31 @@ def makeIntersecao(aWithEdges, bWithEdges):
     Vertices = []
     countA = 0
     countB = 0
-
-    for b in bWithEdges.Arestas:
-        countB += 1
-        if not b.out:
-            Vertices.append(b.ini)
-        else:
-            Vertices.append(b.ini)
-            break
-
-    for b in bWithEdges.Arestas[countB::]:
-        countB += 1
-        if not b.out:
-            if countB == len(bWithEdges.Arestas):
-                Vertices.append(b.ini)
-                Vertices.append(b.fim)
+    helper = 1
+    while countA < len(aWithEdges.Arestas) or countB < len(bWithEdges.Arestas):
+        if helper == 1:
+            if countA < len(aWithEdges.Arestas):
+                for a in aWithEdges.Arestas[countA::]:
+                    countA += 1
+                    if not a.out:
+                        Vertices.append(a.ini)
+                        helper = 2
+                    else:
+                        break
             else:
-                Vertices.append(b.ini)
+                helper = 2
+
+        elif helper == 2:
+            if countB < len(bWithEdges.Arestas):
+                for b in bWithEdges.Arestas[countB::]:
+                    countB += 1
+                    if not b.out:
+                        Vertices.append(b.ini)
+                        helper = 1
+                    else:
+                        break
+            else:
+                helper = 1
 
     return Vertices
 
@@ -359,17 +367,20 @@ def makeUniao(aWithEdges: Polygon, bWithEdges: Polygon):
                         helper = 2
                     else:
                         break
+            else:
+                helper = 2
+
         elif helper == 2:
             if countB < len(bWithEdges.Arestas):
                 for b in bWithEdges.Arestas[countB::]:
-                    b.ini.imprime()
-                    print(b.out)
                     countB += 1
                     if b.out:
                         Vertices.append(b.ini)
                         helper = 1
                     else:
                         break
+            else:
+                helper = 1
 
     return Vertices
 
