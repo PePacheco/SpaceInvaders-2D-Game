@@ -349,6 +349,8 @@ def makeIntersecao(aWithEdges, bWithEdges):
             else:
                 helper = 1
 
+    for v in Vertices:
+        v.imprime()
     return Vertices
 
 
