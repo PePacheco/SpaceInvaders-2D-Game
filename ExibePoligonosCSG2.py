@@ -305,7 +305,7 @@ def getIntersection(k, l, m, n):
         else:
             return False
 
-def getInAndOut(A,B, newPolWithEdges):
+def getInAndOut(A,B, InsAndOuts):
     for arestaA in A.Arestas:
         count = 0
         pontoMedio = getPontoMedioAresta(arestaA)
