@@ -484,8 +484,6 @@ def init():
         populaArestasPoligono(newA)
         populaArestasPoligono(newB)
 
-    
-
     InsAndOutsForA = { 'out': [], 'in': [] }
     InsAndOutsForB = { 'out': [], 'in': [] }
     
@@ -498,7 +496,6 @@ def init():
         InsWithProcessedForIntersec.append(a)
     for a in InsAndOutsForB['in']:
         InsWithProcessedForIntersec.append(a)
-
     Intersecao.Vertices += MakeIntersecao(InsWithProcessedForIntersec)
 
     #Uniao
@@ -524,12 +521,6 @@ def init():
     
     Diferenca.Vertices += MakeDiferenca(InsAndOutsWithProcessedForDif)
 
-
-    
-    
-
-    
-    
 
 # ***********************************************************************************
 # Programa Principal
