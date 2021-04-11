@@ -17,8 +17,11 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from Poligonos import *
 from Edge import *
+<<<<<<< HEAD
 import itertools
 
+=======
+>>>>>>> b9d086dcf13bab14be6122fbb6252a550b010552
 
 # ***********************************************************************************
 Mapa = Polygon()
@@ -27,8 +30,11 @@ A = Polygon()
 B = Polygon()
 newA = Polygon()
 newB = Polygon()
+aWithEdges = Polygon()
+bWithEdges = Polygon()
 Uniao = Polygon()
 Intersecao = Polygon()
+Uniao = Polygon()
 Diferenca = Polygon()
 
 # Limites lógicos da área de desenho
@@ -247,7 +253,6 @@ def CreateNewPolygonWithIntersections(S1, S2):
     
     newPolygon = Polygon()
 
-    
     for p1 in range(size1):
         indexP1 = p1
         indexP1P = 0
@@ -270,7 +275,6 @@ def CreateNewPolygonWithIntersections(S1, S2):
             if hasRetaIntersection(S1.Vertices[indexP1], S1.Vertices[indexP1P], S2.Vertices[indexP2], S2.Vertices[indexP2P]): 
                 point1 = getIntersection(S1.Vertices[indexP1], S1.Vertices[indexP1P], S2.Vertices[indexP2], S2.Vertices[indexP2P])
                 newPolygon.insereVertice(point1.x,point1.y,0)
-                continue
             
     return newPolygon
 
@@ -284,7 +288,7 @@ def populaArestasPoligono(P1):
             indexP1P = 0
         else:
             indexP1P = p1 + 1
-        
+
         P1.Arestas.append((P1.Vertices[indexP1],P1.Vertices[indexP1P]))
            
 
@@ -304,7 +308,7 @@ def getIntersection(k, l, m, n):
         else:
             return False
 
-def getInAndOut(A,B,InsAndOuts):
+def getInAndOut(A,B, newPolWithEdges):
     for arestaA in A.Arestas:
         count = 0
         pontoMedio = getPontoMedioAresta(arestaA)
@@ -438,13 +442,6 @@ def getVerticeIntersec(r1, r2, t):
     x = r1.x*(1 - t) + r2.x * t
     y = r1.y*(1 - t) + r2.y * t
     return Point(x, y, 0)
-
-def arestaIsInside(p1, p2, P2):
-    pontoMedioX, pontoMedioY = getPontoMedioAresta((p1, p2))
-    for point in P2.Vertices:
-        continue
-        point.imprime()
-    return False
 
 def init():
     global Min, Max, Meio, Terco, Largura  # Variáveis usadas para definir os limites da Window
