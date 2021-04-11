@@ -29,8 +29,8 @@ newA = Polygon()
 newB = Polygon()
 Uniao = Polygon()
 Intersecao = Polygon()
-Diferenca = Polygon()
-
+DiferencaAB = Polygon()
+DiferencaBA = Polygon()
 # Limites lógicos da área de desenho
 Min = Point()
 Max = Point()
@@ -120,17 +120,17 @@ def display():
     glScalef(0.33, 0.5, 1)
     glLineWidth(2)
     glColor3f(1,1,0); # R, G, B  [0..1]
-    Diferenca.desenhaPoligono()
+    DiferencaAB.desenhaPoligono()
     glPopMatrix()
     
-    # # Desenha o polígono B no meio, abaixo
-    # glPushMatrix()
-    # glTranslatef(Terco.x, 0, 0)
-    # glScalef(0.33, 0.5, 1)
-    # glLineWidth(2)
-    # glColor3f(1,0,0) # R, G, B  [0..1]
-    # B.desenhaPoligono()
-    # glPopMatrix()
+    # Desenha o polígono B no meio, abaixo
+    glPushMatrix()
+    glTranslatef(Terco.x, 0, 0)
+    glScalef(0.33, 0.5, 1)
+    glLineWidth(2)
+    glColor3f(1,0,0) # R, G, B  [0..1]
+    DiferencaBA.desenhaPoligono()
+    glPopMatrix()
 
     glutSwapBuffers()
 
@@ -330,7 +330,12 @@ def MakeIntersecao(InsWithProcessedForIntersec):
     ArestasEmOrdem = []
     Vertices = []
     lastAppended = None
+    count = 0
     for edge in itertools.cycle(InsWithProcessedForIntersec):
+        count += 1
+        if(count >= 200):
+            print('Entrou em recursao na intersecao, TA ERRADO')
+            break
         if(AllProcessed(InsWithProcessedForIntersec)):
             break
         else:
@@ -345,7 +350,10 @@ def MakeIntersecao(InsWithProcessedForIntersec):
                         ArestasEmOrdem.append((edge.ini,edge.fim))
                         lastAppended = ArestasEmOrdem[-1]
                         edge.processed = True
-                        
+                    elif( (lastAppended[1].x == edge.fim.x and lastAppended[1].y == edge.fim.y)):
+                        ArestasEmOrdem.append((edge.fim,edge.ini))
+                        lastAppended = ArestasEmOrdem[-1]
+                        edge.processed = True            
             else:
                 continue  
 
@@ -363,7 +371,12 @@ def MakeUnion(OutsWithProcessedForUnion):
     ArestasEmOrdem = []
     Vertices = []
     lastAppended = None
+    count = 0
     for edge in itertools.cycle(OutsWithProcessedForUnion):
+        count += 1
+        if(count >= 200):
+            print('Entrou em recursao na uniao, TA ERRADO')
+            break
         if(AllProcessed(OutsWithProcessedForUnion)):
             break
         else:
@@ -378,7 +391,10 @@ def MakeUnion(OutsWithProcessedForUnion):
                         ArestasEmOrdem.append((edge.ini,edge.fim))
                         lastAppended = ArestasEmOrdem[-1]
                         edge.processed = True
-                        
+                    elif( (lastAppended[1].x == edge.fim.x and lastAppended[1].y == edge.fim.y)):
+                        ArestasEmOrdem.append((edge.fim,edge.ini))
+                        lastAppended = ArestasEmOrdem[-1]
+                        edge.processed = True            
             else:
                 continue  
 
@@ -396,7 +412,12 @@ def MakeDiferenca(InsAndOutsWithProcessedForDif):
     ArestasEmOrdem = []
     Vertices = []
     lastAppended = None
+    count = 0
     for edge in itertools.cycle(InsAndOutsWithProcessedForDif):
+        count += 1
+        if(count >= 200):
+            print('Entrou em recursao na diferenca, TA ERRADO')
+            break
         if(AllProcessed(InsAndOutsWithProcessedForDif)):
             break
         else:
@@ -407,17 +428,20 @@ def MakeDiferenca(InsAndOutsWithProcessedForDif):
                     lastAppended = ArestasEmOrdem[-1]
                     
                 else:
-                    if((lastAppended[1].x == edge.ini.x and lastAppended[1].y == edge.ini.y) or (lastAppended[1].x == edge.fim.x and lastAppended[1].y == edge.fim.y)):
+                    if( (lastAppended[1].x == edge.ini.x and lastAppended[1].y == edge.ini.y)):
                         ArestasEmOrdem.append((edge.ini,edge.fim))
                         lastAppended = ArestasEmOrdem[-1]
                         edge.processed = True
-                        
+                    elif( (lastAppended[1].x == edge.fim.x and lastAppended[1].y == edge.fim.y)):
+                        ArestasEmOrdem.append((edge.fim,edge.ini))
+                        lastAppended = ArestasEmOrdem[-1]
+                        edge.processed = True    
             else:
                 continue  
 
     for x in ArestasEmOrdem:
         Vertices.append(x[0])     
-        Vertices.append(x[1])     
+           
 
     #Cleaning edges
     for x in InsAndOutsWithProcessedForDif:
@@ -439,12 +463,6 @@ def getVerticeIntersec(r1, r2, t):
     y = r1.y*(1 - t) + r2.y * t
     return Point(x, y, 0)
 
-def arestaIsInside(p1, p2, P2):
-    pontoMedioX, pontoMedioY = getPontoMedioAresta((p1, p2))
-    for point in P2.Vertices:
-        continue
-        point.imprime()
-    return False
 
 def init():
     global Min, Max, Meio, Terco, Largura  # Variáveis usadas para definir os limites da Window
@@ -474,15 +492,15 @@ def init():
 
     #-------------------------------------NOSSOS TESTESSSSSSSSSSSSSSSSSSSSSSSS---------------------------------------------------#
     
-    if(hasPolygonIntersection(A,B)):
-        populaArestasPoligono(A)
-        populaArestasPoligono(B)
+    
+    populaArestasPoligono(A)
+    populaArestasPoligono(B)
 
-        newA.Vertices = CreateNewPolygonWithIntersections(A,B).Vertices
-        newB.Vertices = CreateNewPolygonWithIntersections(B,A).Vertices
+    newA.Vertices = CreateNewPolygonWithIntersections(A,B).Vertices
+    newB.Vertices = CreateNewPolygonWithIntersections(B,A).Vertices
 
-        populaArestasPoligono(newA)
-        populaArestasPoligono(newB)
+    populaArestasPoligono(newA)
+    populaArestasPoligono(newB)
 
     
 
@@ -490,7 +508,8 @@ def init():
     InsAndOutsForB = { 'out': [], 'in': [] }
     
     getInAndOut(newA,B,InsAndOutsForA)
-    getInAndOut(newB,A,InsAndOutsForB)
+    getInAndOut(newB,A,InsAndOutsForB)  
+      
 
     #Intersec
     InsWithProcessedForIntersec = []
@@ -499,6 +518,8 @@ def init():
     for a in InsAndOutsForB['in']:
         InsWithProcessedForIntersec.append(a)
 
+    # for a in InsWithProcessedForIntersec:
+    #     a.imprime()
     Intersecao.Vertices += MakeIntersecao(InsWithProcessedForIntersec)
 
     #Uniao
@@ -507,22 +528,29 @@ def init():
         OutsWithProcessedForUnion.append(a)
     for a in InsAndOutsForB['out']:
         OutsWithProcessedForUnion.append(a)
+
     Uniao.Vertices += MakeUnion(OutsWithProcessedForUnion)
     
     #B-A   --- TA ERRADO MAS TA PERTO
     InsAndOutsWithProcessedForDif = []
-    aux = []
-    for a in InsAndOutsForB['out']:
+    for a in InsAndOutsForB['in']:
         InsAndOutsWithProcessedForDif.append(a)
-    for a in InsAndOutsForA['in']:
-        aux.append(a)
-    for a in reversed(aux):
+    for a in InsAndOutsForA['out']:
         InsAndOutsWithProcessedForDif.append(a)
-
-    for x in InsAndOutsWithProcessedForDif:
-        x.imprime()
     
-    Diferenca.Vertices += MakeDiferenca(InsAndOutsWithProcessedForDif)
+    DiferencaAB.Vertices += MakeDiferenca(InsAndOutsWithProcessedForDif)
+
+    #B-A   --- TA ERRADO MAS TA PERTO
+    InsAndOutsWithProcessedForDif2 = []
+    for a in InsAndOutsForA['in']:
+        InsAndOutsWithProcessedForDif2.append(a)
+    for a in InsAndOutsForB['out']:
+        InsAndOutsWithProcessedForDif2.append(a)
+
+    
+    
+    DiferencaBA.Vertices += MakeDiferenca(InsAndOutsWithProcessedForDif2)
+    
 
 
     
