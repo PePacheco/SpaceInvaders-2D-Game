@@ -500,9 +500,9 @@ def savePolygon(Pol, filename):
 def init():
     global Min, Max, Meio, Terco, Largura  # Variáveis usadas para definir os limites da Window
     
-    LePontosDeArquivo("Objeto3.txt", A)
+    LePontosDeArquivo("Triangulo.txt", A)
     Min, Max = A.getLimits()
-    LePontosDeArquivo("Objeto4.txt", B)
+    LePontosDeArquivo("Retangulo.txt", B)
     MinAux, MaxAux = B.getLimits()
     
     # Atualiza os limites globais após cada leitura
