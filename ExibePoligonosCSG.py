@@ -434,8 +434,7 @@ def MakeUnion(OutsWithProcessedForUnion):
 
     return Vertices                
 
-def MakeDiferenca(InsAndOutsWithProcessedForDif):   
-    ### TA ERRADO - MAS TA PERTO 
+def MakeDiferenca(InsAndOutsWithProcessedForDif):
     ArestasEmOrdem = []
     Vertices = []
     lastAppended = None
@@ -523,9 +522,6 @@ def init():
     Meio.y = (Max.y+Min.y)/2
     Meio.z = (Max.z+Min.z)/2
 
-    #-------------------------------------NOSSOS TESTESSSSSSSSSSSSSSSSSSSSSSSS---------------------------------------------------#
-    
-    
     populaArestasPoligono(A)
     populaArestasPoligono(B)
 
@@ -541,7 +537,6 @@ def init():
     getInAndOut(newA,B,InsAndOutsForA)
     getInAndOut(newB,A,InsAndOutsForB)  
       
-
     #Intersec
     InsWithProcessedForIntersec = []
 
@@ -552,7 +547,6 @@ def init():
 
     Intersecao.Vertices += MakeIntersecao(InsWithProcessedForIntersec)
     savePolygon(Intersecao, 'INTERSECAO.txt')
-
 
     #Uniao
     OutsWithProcessedForUnion = []
@@ -574,20 +568,15 @@ def init():
     DiferencaAB.Vertices += MakeDiferenca(InsAndOutsWithProcessedForDif)
     savePolygon(DiferencaAB, 'DIFERENCAAB.txt')
 
-
     #B-A   --- TA ERRADO MAS TA PERTO
     InsAndOutsWithProcessedForDif2 = []
     for a in InsAndOutsForA['in']:
         InsAndOutsWithProcessedForDif2.append(a)
     for a in InsAndOutsForB['out']:
         InsAndOutsWithProcessedForDif2.append(a)
-
-    
     
     DiferencaBA.Vertices += MakeDiferenca(InsAndOutsWithProcessedForDif2)
     savePolygon(DiferencaBA, 'DIFERENCABA.txt')
-
-
 
 # ***********************************************************************************
 # Programa Principal
