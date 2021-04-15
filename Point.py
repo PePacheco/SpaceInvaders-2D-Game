@@ -26,6 +26,9 @@ class Point:
         self.y *= y;
         self.z *= z;
 
+    def __eq__(self, other):
+        return (self.x, self.y) == (other.x,other.y)
+
 #P = Point()
 #P.set(1,2)
 #P.imprime()

@@ -11,3 +11,5 @@ class Edge:
         self.fim.imprime()
         print("--------")
     
+    def _eq_(self, other):
+        return (self.ini, self.fim) == (other.ini, other.fim)
